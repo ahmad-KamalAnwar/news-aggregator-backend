@@ -28,7 +28,7 @@ RUN mkdir /var/cache/nginx/.composer && chown nginx:nginx /var/cache/nginx/.comp
 COPY --chown=nginx:nginx . /var/www/html/
 
 # Install build dependencies
-RUN if [ "$APP_ENV" = "dev" ] ; then \
+RUN if [ "$APP_ENV" = "local" ] ; then \
         composer global require hirak/prestissimo && \
         composer install --working-dir=/var/www/html \
     ; else \
