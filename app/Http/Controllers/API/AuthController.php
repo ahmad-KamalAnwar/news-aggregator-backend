@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {

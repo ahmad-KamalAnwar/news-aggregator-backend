@@ -10,13 +10,12 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Category updateOrCreate(array $uniqueFields, array $data)
  * @method static Category|Builder whereIn(string $column, array $data)
  */
-class Category extends BaseModel
+class Author extends BaseModel
 {
-    const GENERAL = "general";
     /**
      * @var string
      */
-    protected $table = 'categories';
+    protected $table = 'authors';
 
     /**
      * @var string[]

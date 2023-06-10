@@ -66,7 +66,7 @@ class BaseModel extends PhpDocModel
      * @param  \DateTime  $date
      * @return string
      */
-    protected function serializeDate(\DateTime $date)
+    protected function serializeDate(\DateTimeInterface $date)
     {
         $format = $this->serializeDateFormat ?? $this->getDateFormat();
 

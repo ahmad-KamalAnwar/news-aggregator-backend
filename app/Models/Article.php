@@ -8,20 +8,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int id
- * @property string abstract
+ * @property string title
+ * @property string description
+ * @property string content
  * @property string web_url
- * @property string snippet
- * @property string headline_main
- * @property Carbon publish_date
- * @property Carbon document_type
- * @property Carbon document_id
- * @property Carbon document_uri
+ * @property Carbon published_at
  * @property int source_id
  * @property int category_id
+ * @property int author_id
  * @property Carbon created_at
  * @property Carbon updated_at
  *
  * @property Category category
+ * @property Author author
  * @property Source source
  *
  * @method static Article find($id)
@@ -39,16 +38,14 @@ class Article extends BaseModel
      * @var string[]
      */
     protected $fillable = [
-        'abstract',
+        'description',
         'web_url',
-        'snippet',
-        'headline_main',
-        'publish_date',
-        'document_type',
-        'document_id',
-        'document_uri',
+        'title',
+        'content',
+        'published_at',
         'source_id',
-        'category_id'
+        'category_id',
+        'author_id'
     ];
 
     protected $hidden = [
@@ -75,5 +72,13 @@ class Article extends BaseModel
     public function source()
     {
         return $this->belongsTo(Category::class, 'source_id');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function author()
+    {
+        return $this->belongsTo(Author::class, 'author_id');
     }
 }
