@@ -21,6 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/article', [\App\Http\Controllers\API\ArticleController::class, 'getArticles']);
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
