@@ -56,7 +56,7 @@ class AuthController extends Controller
             'expires_in' => 30
         ];
 
-        return response($response, 201);
+        return response($response, 200);
     }
 
     public function logout(Request $request) {
