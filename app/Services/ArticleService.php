@@ -18,5 +18,4 @@ class ArticleService
 
         return $articles;
     }
-
 }
