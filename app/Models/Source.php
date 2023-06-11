@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class Source extends BaseModel
 {
+    const THE_GUARDIAN = 'The Guardian';
     /**
      * @var string
      */

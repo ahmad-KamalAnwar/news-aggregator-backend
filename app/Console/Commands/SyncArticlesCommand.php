@@ -43,45 +43,27 @@ class SyncArticlesCommand extends Command
      */
     public function handle()
     {
-        $newsAPIUrl = 'https://newsapi.org/v2/everything?q=The Guardian&apiKey=9951b04cad46414ab61c365610ce9466';
+        $newsAPIUrl = config('app.NEWS_API_URL') . '&apiKey=' . config('app.NEWS_API_KEY');
+        $nyTimesUrl = config('app.NEWYORK_TIME_API_URL') . '?api-key=' . config('app.NY_TIMES_API_KEY');
+        $theGuardiansUrl = config('app.THE_GAURDIANS_API_URL') . '?api-key=' . config('app.THE_GUARDIANS_API_KEY');
+
         $response = $this->callApiEndpoint($newsAPIUrl, 'GET');
-        $articles = json_decode(json_encode($response->articles), true);
+        $newsAPIArticles = json_decode(json_encode($response->articles), true);
+        $this->createNewsApiArticles($newsAPIArticles);
 
-        foreach ($articles as $article) {
-            $authorId = null;
-            $sourceId = null;
-            $categoryId = null;
-            $category = isset($article['category']) && !empty($article['category']) ?
-                $article['category'] : Category::GENERAL;
-            $categoryId = $this->getCategoryId($category);
-
-            if (isset($article['source']['name']) && !empty($article['source']['name'])) {
-                $sourceId = $this->getSourceId($article['source']['name']);
-            }
-
-            if (isset($article['author']) && !empty($article['author'])) {
-                $authorId = $this->getAuthorId($article['author']);
-            }
-
-            Article::updateOrCreate(
-                [
-                    'title' => $article['title'],
-                    'description' => $article['description'],
-                    'web_url' => $article['url'],
-                    'content' => $article['content'],
-                    'published_at' => $article['publishedAt'],
-                    'source_id' => $sourceId,
-                    'category_id' => $categoryId,
-                    'author_id' => $authorId
-                ],
-                []
-            );
-        }
-
-        $nyTimesUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=4XLPVJlK6zU1vQDLet5OBMvotlBhAYKe';
         $response = $this->callApiEndpoint($nyTimesUrl, 'GET');
-        $articles = json_decode(json_encode($response), true)['response']['docs'];
+        $nyTimesArticles = json_decode(json_encode($response), true)['response']['docs'];
+        $this->createNyTimesArticles($nyTimesArticles);
 
+        $response = $this->callApiEndpoint($theGuardiansUrl, 'GET');
+        $theGuardianArticles = json_decode(json_encode($response), true)['response']['results'];
+        $this->createtheGuardianArticles($theGuardianArticles);
+
+        return 0;
+    }
+
+    private function createNyTimesArticles($articles)
+    {
         foreach ($articles as $article) {
             $authorId = null;
             $sourceId = null;
@@ -98,7 +80,7 @@ class SyncArticlesCommand extends Command
                 $authorId = $this->getAuthorId($article['author']);
             }
 
-            Article::updateOrCreate(
+            $this->createArticle(
                 [
                     'title' => $article['headline']['main'],
                     'description' => $article['abstract'],
@@ -108,12 +90,73 @@ class SyncArticlesCommand extends Command
                     'source_id' => $sourceId,
                     'category_id' => $categoryId,
                     'author_id' => $authorId
-                ],
-                []
+                ]
             );
         }
+    }
 
-        return 0;
+    private function createtheGuardianArticles($articles)
+    {
+        $sourceId = $this->getSourceId(Source::THE_GUARDIAN);
+
+        foreach ($articles as $article) {
+            $authorId = null;
+            $categoryId = null;
+            $category = isset($article['sectionName']) && !empty($article['sectionName']) ?
+                $article['sectionName'] : Category::GENERAL;
+            $categoryId = $this->getCategoryId($category);
+
+
+            if (isset($article['author']) && !empty($article['author'])) {
+                $authorId = $this->getAuthorId($article['author']);
+            }
+
+            $this->createArticle(
+                [
+                    'title' => $article['webTitle'],
+                    'description' => null,
+                    'web_url' => $article['webUrl'],
+                    'content' => null,
+                    'published_at' => $article['webPublicationDate'],
+                    'source_id' => $sourceId,
+                    'category_id' => $categoryId,
+                    'author_id' => $authorId
+                ]
+            );
+        }
+    }
+
+    private function createNewsApiArticles($articles)
+    {
+        foreach ($articles as $article) {
+            $authorId = null;
+            $sourceId = null;
+            $categoryId = null;
+            $category = isset($article['category']) && !empty($article['category']) ?
+                $article['category'] : Category::GENERAL;
+            $categoryId = $this->getCategoryId($category);
+
+            if (isset($article['source']['name']) && !empty($article['source']['name'])) {
+                $sourceId = $this->getSourceId($article['source']['name']);
+            }
+
+            if (isset($article['author']) && !empty($article['author'])) {
+                $authorId = $this->getAuthorId($article['author']);
+            }
+
+            $this->createArticle(
+                [
+                    'title' => $article['title'],
+                    'description' => $article['description'],
+                    'web_url' => $article['url'],
+                    'content' => $article['content'],
+                    'published_at' => $article['publishedAt'],
+                    'source_id' => $sourceId,
+                    'category_id' => $categoryId,
+                    'author_id' => $authorId
+                ]
+            );
+        }
     }
 
     private function callApiEndpoint($url, $method, $options = [])
@@ -161,4 +204,20 @@ class SyncArticlesCommand extends Command
         return $category->id;
     }
 
+    private function createArticle($data)
+    {
+        Article::updateOrCreate(
+            [
+                'title' => $data['title'],
+                'description' => $data['description'],
+                'web_url' => $data['web_url'],
+                'content' => $data['content'],
+                'published_at' => $data['published_at'],
+                'source_id' => $data['source_id'],
+                'category_id' => $data['category_id'],
+                'author_id' => $data['author_id']
+            ],
+            []
+        );
+    }
 }

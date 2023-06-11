@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'NEWYORK_TIME_API_URL' => env('NEWYORK_TIME_API_URL'),
+    'NEWS_API_URL' => env('NEWS_API_URL'),
+    'THE_GAURDIANS_API_URL' => env('THE_GAURDIANS_API_URL'),
+    'NY_TIMES_API_KEY' => env('NY_TIMES_API_KEY'),
+    'NEWS_API_KEY' => env('NEWS_API_KEY'),
+    'THE_GUARDIANS_API_KEY' => env('THE_GUARDIANS_API_KEY'),
 
     /*
     |--------------------------------------------------------------------------
