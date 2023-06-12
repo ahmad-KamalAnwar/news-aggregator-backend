@@ -9,9 +9,9 @@ class ArticleService
     public function getArticles($filters = [])
     {
         if (!empty($filters)) {
-            $articles = Article::where($filters)->paginate(10);
+            $articles = Article::with(['source', 'category', 'author'])->where($filters)->paginate(10);
         } else {
-            $articles = Article::paginate(10);
+            $articles = Article::with(['source', 'category', 'author'])->paginate(10);
         }
 
         return $articles;
