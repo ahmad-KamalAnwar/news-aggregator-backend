@@ -15,18 +15,16 @@ class AuthController extends Controller
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string|confirmed'
         ]);
-
         $user = User::create([
             'name' => $fields['name'],
             'email' => $fields['email'],
             'password' => bcrypt($fields['password'])
         ]);
-
         $token = $user->createToken('myapptoken')->plainTextToken;
-
         $response = [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'message' => 'Successfully signed in!'
         ];
 
         return response($response, 201);
@@ -44,7 +42,7 @@ class AuthController extends Controller
         // Check password
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
-                'message' => 'Bad creds'
+                'message' => 'Bad credentials'
             ], 401);
         }
 
@@ -53,7 +51,8 @@ class AuthController extends Controller
         $response = [
             'user' => $user,
             'token' => $token,
-            'expires_in' => 30
+            'expires_in' => 30,
+            'message' => 'Successfully logged in!'
         ];
 
         return response($response, 200);
