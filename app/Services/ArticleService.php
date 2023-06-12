@@ -10,7 +10,7 @@ class ArticleService
     {
         if (!empty($filters)) {
             $articles = Article::where([
-                'source_id' => 1
+                'source_id' => $filters['sourceId']
             ])->paginate(10);
         } else {
             $articles = Article::paginate(10);

@@ -3,6 +3,8 @@
 namespace App\Services;
 
 
+use App\Models\Author;
+use App\Models\Category;
 use App\Models\Source;
 
 class UserService
@@ -11,10 +13,18 @@ class UserService
     {
         if (!empty($preferences)) {
             if (isset($preferences['sources'])) {
-                $source = Source::whereIn('id', [1,2,3])->get();
-                dd($source);
+                $source = Source::whereIn('id', $preferences['sources'])->get();
             }
-            dd($user, $preferences);
+
+            if (isset($preferences['categories'])) {
+                $category = Category::whereIn('id', $preferences['sources'])->get();
+            }
+
+            if (isset($preferences['authors'])) {
+                $author = Author::whereIn('id', $preferences['auhors'])->get();
+            }
+
+
         }
 
         return true;
