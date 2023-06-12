@@ -13,20 +13,30 @@ class UserService
     {
         if (!empty($preferences)) {
             if (isset($preferences['sources'])) {
-                $source = Source::whereIn('id', $preferences['sources'])->get();
+                $sources = Source::whereIn('id', $preferences['sources'])->get();
+
+                foreach ($sources as $source) {
+                    $user->source()->save($source);
+                }
             }
 
             if (isset($preferences['categories'])) {
-                $category = Category::whereIn('id', $preferences['sources'])->get();
+                $categories = Category::whereIn('id', $preferences['categories'])->get();
+
+                foreach ($categories as $category) {
+                    $user->category()->save($category);
+                }
             }
 
             if (isset($preferences['authors'])) {
-                $author = Author::whereIn('id', $preferences['auhors'])->get();
+                $authors = Author::whereIn('id', $preferences['authors'])->get();
+
+                foreach ($authors as $author) {
+                    $user->author()->save($author);
+                }
             }
-
-
         }
 
-        return true;
+        return $user;
     }
 }
