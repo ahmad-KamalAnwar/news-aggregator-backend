@@ -26,15 +26,15 @@ class ArticleController extends Controller
         $filters = [];
 
         if ($request->query->has('sourceId')) {
-            $filters['sourceId'] = $request->get('sourceId');
+            $filters['source_id'] = $request->get('sourceId');
         }
 
         if ($request->query->has('categoryId')) {
-            $filters['categoryId'] = $request->get('categoryId');
+            $filters['category_id'] = $request->get('categoryId');
         }
 
         if ($request->query->has('authorId')) {
-            $filters['authorId'] = $request->get('authorId');
+            $filters['author_id'] = $request->get('authorId');
         }
 
         $articles = $this->articleService->getArticles($filters);
