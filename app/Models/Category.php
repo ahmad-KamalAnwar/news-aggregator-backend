@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class Category extends BaseModel
 {
-    const GENERAL = "general";
+    const GENERAL = 'general';
     /**
      * @var string
      */
