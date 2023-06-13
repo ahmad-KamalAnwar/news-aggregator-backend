@@ -23,21 +23,7 @@ class ArticleController extends Controller
     }
 
     public function getArticles(Request $request) {
-        $filters = [];
-
-        if ($request->query->has('sourceId')) {
-            $filters['source_id'] = $request->get('sourceId');
-        }
-
-        if ($request->query->has('categoryId')) {
-            $filters['category_id'] = $request->get('categoryId');
-        }
-
-        if ($request->query->has('authorId')) {
-            $filters['author_id'] = $request->get('authorId');
-        }
-
-        $articles = $this->articleService->getArticles($filters);
+        $articles = $this->articleService->getArticles($request);
 
         return response([
             'articles' => $articles
