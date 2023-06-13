@@ -8,8 +8,8 @@ class ArticleService
 {
     public function getArticles($request)
     {
-        $from = null;
-        $until = null;
+        $fromDate = null;
+        $toDate = null;
         $filters = [];
 
         if ($request->query->has('sourceId')) {
@@ -20,20 +20,20 @@ class ArticleService
             $filters['category_id'] = $request->get('categoryId');
         }
 
-        if ($request->query->has('from')) {
-            $from = new \DateTime($request->get('from'));
+        if ($request->query->has('fromDate')) {
+            $fromDate = new \DateTime($request->get('fromDate'));
         }
 
-        if ($request->query->has('until')) {
-            $until = new \DateTime($request->get('until'));
-            $until = $until->setTime(23,59,59);
+        if ($request->query->has('toDate')) {
+            $toDate = new \DateTime($request->get('toDate'));
+            $toDate = $toDate->setTime(23,59,59);
         }
 
         if (!empty($filters)) {
             $articles = Article::with(['source', 'category', 'author'])->where($filters);
 
-            if (!is_null($from) && !is_null($until)) {
-                $articles = $articles->whereBetween('published_at', [$from, $until]);
+            if (!is_null($fromDate) && !is_null($toDate)) {
+                $articles = $articles->whereBetween('published_at', [$fromDate, $toDate]);
             }
 
             $articles = $articles->paginate(10);
