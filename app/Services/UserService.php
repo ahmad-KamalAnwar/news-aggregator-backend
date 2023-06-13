@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Author;
 use App\Models\Category;
 use App\Models\Source;
+use App\Models\User;
 
 class UserService
 {
@@ -37,5 +38,46 @@ class UserService
         }
 
         return $user;
+    }
+
+    public function getUserPrefrences($user)
+    {
+        $sources = [];
+        $categories = [];
+        $authors = [];
+        $user = User::find($user->id);
+
+        if (!empty($user->source)) {
+            foreach ($user->source as $source) {
+                $sourceId = $source->pivot->preferable_id;
+                if (!in_array($sourceId, $sources)) {
+                    $sources[] .= $source->pivot->preferable_id;
+                }
+            }
+        }
+
+        if (!empty($user->category)) {
+            foreach ($user->category as $category) {
+                $categoryId = $category->pivot->preferable_id;
+                if (!in_array($categoryId, $categories)) {
+                    $categories[] .= $category->pivot->preferable_id;
+                }
+            }
+        }
+
+        if (!empty($user->author)) {
+            foreach ($user->author as $author) {
+                $authorId = $author->pivot->preferable_id;
+                if (!in_array($authorId, $authors)) {
+                    $authors[] .= $author->pivot->preferable_id;
+                }
+            }
+        }
+
+        return [
+            'source' => $sources,
+            'author' => $authors,
+            'categories' => $categories
+        ];
     }
 }
