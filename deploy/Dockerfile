@@ -18,6 +18,9 @@ ENV BUILD_ON_RUN=false
 # Copy php-fpm conf
 COPY deploy/www.conf /usr/local/etc/php-fpm.d/www.conf
 
+RUN wget https://raw.github.com/kvz/cronlock/v0.1.0/cronlock -O /usr/bin/cronlock && \
+    chmod +x /usr/bin/cronlock
+
 # Change ownership of app dir
 RUN chown -Rf nginx.nginx /var/www/html/
 
@@ -39,5 +42,8 @@ RUN if [ "$APP_ENV" = "local" ] ; then \
 USER root
 
 WORKDIR "/var/www/html"
+
+COPY deploy/crons /sbin/crons
+RUN chmod -R +x /sbin/crons/
 
 CMD ["/start.sh"]

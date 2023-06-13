@@ -23,9 +23,10 @@ initialize_system() {
 
 if [ "$APP_ENV" == "local" ]; then
   # TODO Figure out some way to run cron through nginx user
-  echo "* * * * * php /var/www/html/artisan schedule:run >> /dev/null 2>&1" > /etc/crontabs/root
+  echo "0 * * * * php /var/www/html/artisan schedule:run >> /dev/null 2>&1" > /etc/crontabs/root
   crond
-#  Running queue workers
+  /sbin/crons/import-articles.sh
+
 fi
 
 # Fix .composer directory ownership - needed when PUID and PGID are present
