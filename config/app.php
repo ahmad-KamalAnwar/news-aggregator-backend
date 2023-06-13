@@ -7,6 +7,8 @@ return [
     'NY_TIMES_API_KEY' => env('NY_TIMES_API_KEY'),
     'NEWS_API_KEY' => env('NEWS_API_KEY'),
     'THE_GUARDIANS_API_KEY' => env('THE_GUARDIANS_API_KEY'),
+    'REDIS_HOST' => env('REDIS_HOST'),
+    'REDIS_PORT' => env('REDIS_PORT'),
 
     /*
     |--------------------------------------------------------------------------

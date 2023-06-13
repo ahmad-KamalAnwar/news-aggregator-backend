@@ -11,12 +11,14 @@ use Illuminate\Console\Command;
 
 class SyncArticlesCommand extends Command
 {
+    const MAX_PAGE_SIZE = 10;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'sync:articles';
+    protected $signature = 'import:articles';
 
     /**
      * The console command description.
@@ -43,9 +45,16 @@ class SyncArticlesCommand extends Command
      */
     public function handle()
     {
-        $newsAPIUrl = config('app.NEWS_API_URL') . '&apiKey=' . config('app.NEWS_API_KEY');
-        $nyTimesUrl = config('app.NEWYORK_TIME_API_URL') . '?api-key=' . config('app.NY_TIMES_API_KEY');
-        $theGuardiansUrl = config('app.THE_GAURDIANS_API_URL') . '?api-key=' . config('app.THE_GUARDIANS_API_KEY');
+        $redisClient = new \Predis\Client([
+            'scheme' => 'tcp',
+            'host' => config('app.REDIS_HOST'),
+            'port' => (int)config('app.REDIS_PORT')
+        ]);
+        $pageNumber = $redisClient->get('page-number') ?? 0;
+        $newPageNumber = $pageNumber+1;
+        $newsAPIUrl = config('app.NEWS_API_URL') . 'page=' . $newPageNumber . '&pageSize=' . self::MAX_PAGE_SIZE .'&apiKey=' . config('app.NEWS_API_KEY');
+        $nyTimesUrl = config('app.NEWYORK_TIME_API_URL') . '?page=' . $pageNumber . '&api-key=' . config('app.NY_TIMES_API_KEY');
+        $theGuardiansUrl = config('app.THE_GAURDIANS_API_URL') . '?page=' . $newPageNumber . '&api-key=' . config('app.THE_GUARDIANS_API_KEY');
 
         $response = $this->callApiEndpoint($newsAPIUrl, 'GET');
         $newsAPIArticles = json_decode(json_encode($response->articles), true);
@@ -58,6 +67,8 @@ class SyncArticlesCommand extends Command
         $response = $this->callApiEndpoint($theGuardiansUrl, 'GET');
         $theGuardianArticles = json_decode(json_encode($response), true)['response']['results'];
         $this->createtheGuardianArticles($theGuardianArticles);
+
+        $redisClient->set('page-number', $newPageNumber);
 
         return 0;
     }
