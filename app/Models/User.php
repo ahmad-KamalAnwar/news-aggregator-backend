@@ -41,7 +41,6 @@ class User extends Authenticatable
     public function source() : MorphToMany
     {
         return $this->morphedByMany(Source::class, 'preferable');
-
     }
 
     public function author() : MorphToMany
