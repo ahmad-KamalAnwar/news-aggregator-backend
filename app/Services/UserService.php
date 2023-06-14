@@ -75,8 +75,8 @@ class UserService
         }
 
         return [
-            'source' => $sources,
-            'author' => $authors,
+            'sources' => $sources,
+            'authors' => $authors,
             'categories' => $categories
         ];
     }

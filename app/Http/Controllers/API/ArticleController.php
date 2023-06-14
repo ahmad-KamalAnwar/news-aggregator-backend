@@ -22,8 +22,10 @@ class ArticleController extends Controller
         $this->articleService = $articleService;
     }
 
-    public function getArticles(Request $request) {
-        $articles = $this->articleService->getArticles($request);
+    public function getArticles(Request $request)
+    {
+        $user = auth()->user();
+        $articles = $this->articleService->getArticles($request, $user);
 
         return response([
             'articles' => $articles
