@@ -25,7 +25,6 @@ class ArticleService
         $fromDate = null;
         $toDate = null;
         $filters = [];
-        $preferences = $this->userService->getUserPrefrences($user);
 
         if ($request->query->has('sourceId')) {
             $filters['source_id'] = $request->get('sourceId');
@@ -51,22 +50,23 @@ class ArticleService
                 $articles = $articles->whereBetween('published_at', [$fromDate, $toDate]);
             }
         } else {
+            $preferences = $this->userService->getUserPrefrences($user);
             $articles = Article::with(['source', 'category', 'author']);
+
+            if (!empty($preferences['sources'])) {
+                $articles = $articles->whereIn('source_id', $preferences['sources']);
+            }
+
+            if (!empty($preferences['categories'])) {
+                $articles = $articles->whereIn('category_id', $preferences['categories']);
+            }
+
+            if (!empty($preferences['authors'])) {
+                $articles = $articles->whereIn('author_id', $preferences['authors']);
+            }
         }
 
-        if (!empty($preferences['sources'])) {
-            $articles = $articles->whereIn('source_id', $preferences['sources']);
-        }
-
-        if (!empty($preferences['categories'])) {
-            $articles = $articles->whereIn('category_id', $preferences['categories']);
-        }
-
-        if (!empty($preferences['authors'])) {
-            $articles = $articles->whereIn('author_id', $preferences['authors']);
-        }
-
-        $articles = $articles->paginate(10);
+        $articles = $articles->paginate(25);
 
         return $articles;
     }
